@@ -1,0 +1,10 @@
+{% extends "templates/base.html" %}
+{% block title %}Ticket #{{ ticket.ID }}{% endblock %}
+{% block header %}{{ ticket.Title }}{% endblock %}
+{% block body %}
+<p><b>Submitter: </b>{{ ticket.Name }} &lt;{{ ticket.Email }}&lt;</p>
+<p><b>Priority: </b>{{ ticket.Priority }}</p>
+<p>
+    {{ ticket.Content }}
+</p>
+{% endblock %}
