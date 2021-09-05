@@ -2,6 +2,7 @@ package owntickets
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -18,25 +19,26 @@ func (o *OwnTickets) ViewTicketPage(w http.ResponseWriter, r *http.Request) {
 	}
 	ticketIDs, ok := mux.Vars(r)["id"]
 	if !ok {
-		// TODO: return 404
+		o.Error(w, 404, "Not found", "Ticket ID not provided.")
 		return
 	}
 
 	var ticket models.Ticket
 	ticketID, err := strconv.Atoi(ticketIDs)
 	if err != nil {
-		// TODO: err
+		o.Error(w, http.StatusUnprocessableEntity, "Invalid ID", "The provided ticket ID is invalid.")
+		return
 	}
 	err = o.Database.First(&ticket, ticketID).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		// TODO: return 404
+		o.Error(w, 404, "Not found", fmt.Sprintf("Ticket #%d could not be found.", ticketID))
 		return
 	}
 
 	// TODO: allow admin to access any ticket
 	if ticket.Key != r.URL.Query().Get("key") {
-		// TODO: return unathorized
+		o.Error(w, 403, "Unauthorized", "Incorrect access key.")
 		return
 	}
 

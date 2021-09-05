@@ -25,6 +25,7 @@ type OwnTickets struct {
 
 	TicketCreateTemplate *pongo2.Template
 	TicketViewTemplate   *pongo2.Template
+	ErrorTemplate        *pongo2.Template
 }
 
 func (o *OwnTickets) Run() error {
@@ -75,7 +76,19 @@ func (o *OwnTickets) SetupTemplates() (err error) {
 		return
 	}
 	o.TicketViewTemplate, err = templateSet.FromFile("templates/ticket_view.html")
+	if err != nil {
+		return
+	}
+	o.ErrorTemplate, err = templateSet.FromFile("templates/error.html")
 	return
+}
+
+func (o *OwnTickets) Error(w http.ResponseWriter, code int, codeMsg string, err string) {
+	w.WriteHeader(code)
+	o.ErrorTemplate.ExecuteWriter(pongo2.Context{
+		"error":        codeMsg,
+		"error_detail": err,
+	}, w)
 }
 
 var decoder = schema.NewDecoder()
