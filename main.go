@@ -3,11 +3,12 @@ package main
 import (
 	"os"
 
+	"github.com/irth/owntickets/internal/owntickets"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	ownTickets := OwnTickets{}
+	ownTickets := owntickets.OwnTickets{}
 
 	app := &cli.App{
 		Name:  "owntickets",

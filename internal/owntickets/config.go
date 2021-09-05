@@ -1,4 +1,4 @@
-package main
+package owntickets
 
 import (
 	"encoding/json"
@@ -7,8 +7,10 @@ import (
 	"strings"
 )
 
-func strToBool(s string) bool {
+func StrToBool(s string) bool {
 	switch strings.ToLower(s) {
+	case "1":
+		return true
 	case "yes":
 		return true
 	case "true":
@@ -46,7 +48,7 @@ func (c *Config) LoadFromEnv() {
 
 	requirePassword, ok := os.LookupEnv("OWNTICKETS_REQUIRE_PASSWORD")
 	if ok {
-		c.RequirePasswordForTicketCreation = strToBool(requirePassword)
+		c.RequirePasswordForTicketCreation = StrToBool(requirePassword)
 	}
 
 	ticketPassword, ok := os.LookupEnv("OWNTICKETS_TICKET_PASSWORD_HASH")
