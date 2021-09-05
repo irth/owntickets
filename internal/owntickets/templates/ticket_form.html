@@ -4,15 +4,54 @@
 {% block body %}
 <form method="POST">
     <p>
+        Name: <input type="text" name="name" id="name">
+        {% if errors.name %}
+        <br>
+        <span class="error">{{ errors.name }}</span>
+        {% endif %}
+    </p>
+    <p>
+        Email: <input type="email" name="email" id="email">
+        {% if errors.email %}
+        <br>
+        <span class="error">{{ errors.email }}</span>
+        {% endif %}
+    </p>
+    <p>
         Title: <input type="text" name="title" id="title">
+        {% if errors.title %}
+        <br>
+        <span class="error">{{ errors.title }}</span>
+        {% endif %}
+    </p>
+    <p>
+        <select name="priority" id="priority">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+        </select>
+        {% if errors.priority %}
+        <br>
+        <span class="error">{{ errors.priority }}</span>
+        {% endif %}
     </p>
     <p>
         Content: <br>
         <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        {% if errors.content %}
+        <br>
+        <span class="error">{{ errors.content }}</span>
+        {% endif %}
     </p>
     {% if ask_for_password %}
     <p>
         Password: <input type="password" name="password" id="password">
+        {% if errors.password %}
+        <br>
+        <span class="error">{{ errors.password }}</span>
+        {% endif %}
     </p>
     {% endif %}
     <input type="submit" value="Create ticket">

@@ -4,9 +4,11 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/flosch/pongo2/v4"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"github.com/irth/owntickets/internal/models"
 	loader "github.com/nathan-osman/pongo2-embed-loader"
 	log "github.com/sirupsen/logrus"
@@ -71,11 +73,70 @@ func (o *OwnTickets) SetupTemplates() (err error) {
 	return
 }
 
+var decoder = schema.NewDecoder()
+
+type TicketForm struct {
+	Name     string `schema:"name"`
+	Email    string `schema:"email"`
+	Title    string `schema:"title"`
+	Content  string `schema:"content"`
+	Priority int    `schema:"priority"`
+	Password string `schema:"password"`
+}
+
+func (t *TicketForm) Validate(requirePass bool) map[string]string {
+	errors := make(map[string]string)
+	notEmpty := func(key string, value string) bool {
+		if value == "" {
+			errors[key] = fmt.Sprintf("%s required", strings.Title(key))
+			return false
+		}
+		return true
+	}
+	if requirePass {
+		valid := notEmpty("password", t.Password)
+		if valid {
+			_ = valid
+			// TODO: validate password
+		}
+	}
+	notEmpty("name", t.Name)
+	notEmpty("email", t.Email)
+	notEmpty("title", t.Title)
+	notEmpty("content", t.Content)
+
+	if t.Priority < 10 {
+		errors["priority"] = "Priority too low"
+	}
+	if t.Priority > 50 {
+		errors["priority"] = "Priority too high"
+	}
+
+	return errors
+}
+
 func (o *OwnTickets) TicketPage(w http.ResponseWriter, r *http.Request) {
-	o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
-		"ask_for_password": o.Config.RequirePasswordForTicketCreation,
-	}, w)
-	// TODO: handle POST
+	if r.Method != http.MethodPost {
+		o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
+			"ask_for_password": o.Config.RequirePasswordForTicketCreation,
+			"errors":           map[string]string{},
+		}, w)
+		return
+	}
+
+	var form TicketForm
+	r.ParseForm()
+	// TODO: handle error from ParseForm
+	decoder.Decode(&form, r.Form)
+	errors := form.Validate(o.Config.RequirePasswordForTicketCreation)
+	if len(errors) > 0 {
+		o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
+			"ask_for_password": o.Config.RequirePasswordForTicketCreation,
+			"errors":           errors,
+		}, w)
+		return
+	}
+
 }
 
 func (o *OwnTickets) AdminPage(w http.ResponseWriter, r *http.Request) {
