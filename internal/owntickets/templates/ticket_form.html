@@ -4,21 +4,21 @@
 {% block body %}
 <form method="POST">
     <p>
-        Name: <input type="text" name="name" id="name">
+        Name: <input type="text" name="name" id="name" value="{{ form.Name }}">
         {% if errors.name %}
         <br>
         <span class="error">{{ errors.name }}</span>
         {% endif %}
     </p>
     <p>
-        Email: <input type="email" name="email" id="email">
+        Email: <input type="email" name="email" id="email" value="{{ form.Email }}">
         {% if errors.email %}
         <br>
         <span class="error">{{ errors.email }}</span>
         {% endif %}
     </p>
     <p>
-        Title: <input type="text" name="title" id="title">
+        Title: <input type="text" name="title" id="title" value="{{ form.Title }}">
         {% if errors.title %}
         <br>
         <span class="error">{{ errors.title }}</span>
@@ -27,11 +27,11 @@
     <p>
         Priority:
         <select name="priority" id="priority">
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
+            <option value="10" {% if form.Priority == 10 %}selected{% endif %}>10</option>
+            <option value="20" {% if form.Priority == 20 %}selected{% endif %}>20</option>
+            <option value="30" {% if form.Priority == 30 %}selected{% endif %}>30</option>
+            <option value="40" {% if form.Priority == 40 %}selected{% endif %}>40</option>
+            <option value="50" {% if form.Priority == 50 %}selected{% endif %}>50</option>
         </select>
         {% if errors.priority %}
         <br>
@@ -40,7 +40,7 @@
     </p>
     <p>
         Content: <br>
-        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        <textarea name="content" id="content" cols="30" rows="10">{{ form.Content }}</textarea>
         {% if errors.content %}
         <br>
         <span class="error">{{ errors.content }}</span>

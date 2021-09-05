@@ -120,6 +120,7 @@ func (o *OwnTickets) TicketPage(w http.ResponseWriter, r *http.Request) {
 		o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
 			"ask_for_password": o.Config.RequirePasswordForTicketCreation,
 			"errors":           map[string]string{},
+			"form":             TicketForm{Priority: 10},
 		}, w)
 		return
 	}
@@ -133,6 +134,7 @@ func (o *OwnTickets) TicketPage(w http.ResponseWriter, r *http.Request) {
 		o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
 			"ask_for_password": o.Config.RequirePasswordForTicketCreation,
 			"errors":           errors,
+			"form":             form,
 		}, w)
 		return
 	}
