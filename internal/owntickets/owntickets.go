@@ -1,12 +1,20 @@
 package owntickets
 
 import (
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/irth/owntickets/internal/models"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type OwnTickets struct {
-	Config Config
-	Logger interface{}
+	Config   Config
+	Database *gorm.DB
+	Router   http.Handler
 }
 
 func (o *OwnTickets) Run() error {
@@ -15,6 +23,37 @@ func (o *OwnTickets) Run() error {
 		log.WithError(err).Fatal("Config invalid")
 		return err
 	}
-	log.Info("Starting OwnTickets")
+	log.Info("Setting up database")
+	if err := o.SetupDatabase(); err != nil {
+		log.WithError(err).Fatal("Failed to set up database")
+		return err
+	}
+	log.Info("Starting webserver")
+	if err := o.SetupRouter(); err != nil {
+		log.WithError(err).Fatal("Failed to start webserver")
+	}
+	http.ListenAndServe(":2137", o.Router)
 	return nil
+}
+
+func (o *OwnTickets) SetupDatabase() error {
+	db, err := gorm.Open(sqlite.Open(o.Config.Database), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+	db.AutoMigrate(&models.Ticket{})
+	o.Database = db
+	return nil
+}
+
+func (o *OwnTickets) SetupRouter() error {
+	r := mux.NewRouter()
+	r.HandleFunc("/admin", o.AdminPage)
+	o.Router = r
+	return nil
+}
+
+func (o *OwnTickets) AdminPage(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Fprintf(w, "hi")
 }
