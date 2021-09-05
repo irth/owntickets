@@ -12,9 +12,9 @@
             "program": "${workspaceFolder}",
             "env":{
                 "OWNTICKETS_DATABASE": "./sqlite3.db",
-                "OWNTICKETS_PASSWORD_HASH": "kek",
+                "OWNTICKETS_PASSWORD_HASH": "$2a$10$d.C9PM4DbSsqhJw29KoRbOleBLdfcNqciCJ5tRNeU2nvuT5nk6dGa", // "admin"
                 "OWNTICKETS_REQUIRE_PASSWORD": "yes",
-                "OWNTICKETS_TICKET_PASSWORD_HASH": "lol",
+                "OWNTICKETS_TICKET_PASSWORD_HASH": "$2a$10$VmKFOpl2oEefPSSF6cBc3OAjSjHHF3O9qs/BxJ9kUxuRJYsM.78Mi", // "ticket"
             },
             "args": ["serve"]
         }

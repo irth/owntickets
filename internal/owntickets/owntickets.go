@@ -12,6 +12,7 @@ import (
 	"github.com/irth/owntickets/internal/models"
 	loader "github.com/nathan-osman/pongo2-embed-loader"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -84,7 +85,7 @@ type TicketForm struct {
 	Password string `schema:"password"`
 }
 
-func (t *TicketForm) Validate(requirePass bool) map[string]string {
+func (t *TicketForm) Validate() map[string]string {
 	errors := make(map[string]string)
 	notEmpty := func(key string, value string) bool {
 		if value == "" {
@@ -92,13 +93,6 @@ func (t *TicketForm) Validate(requirePass bool) map[string]string {
 			return false
 		}
 		return true
-	}
-	if requirePass {
-		valid := notEmpty("password", t.Password)
-		if valid {
-			_ = valid
-			// TODO: validate password
-		}
 	}
 	notEmpty("name", t.Name)
 	notEmpty("email", t.Email)
@@ -129,7 +123,14 @@ func (o *OwnTickets) TicketPage(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	// TODO: handle error from ParseForm
 	decoder.Decode(&form, r.Form)
-	errors := form.Validate(o.Config.RequirePasswordForTicketCreation)
+	errors := form.Validate()
+	if o.Config.RequirePasswordForTicketCreation {
+		err := bcrypt.CompareHashAndPassword([]byte(o.Config.TicketCreationPasswordHash), []byte(form.Password))
+		if err != nil {
+			errors["password"] = "Incorrect password"
+		}
+	}
+
 	if len(errors) > 0 {
 		o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
 			"ask_for_password": o.Config.RequirePasswordForTicketCreation,
@@ -139,6 +140,16 @@ func (o *OwnTickets) TicketPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ticket := models.Ticket{
+		Name:     form.Name,
+		Email:    form.Email,
+		Title:    form.Title,
+		Content:  form.Content,
+		Priority: form.Priority,
+	}
+	o.Database.Create(&ticket)
+	o.Database.Commit()
+	// TODO: redirect to ticket page
 }
 
 func (o *OwnTickets) AdminPage(w http.ResponseWriter, r *http.Request) {
