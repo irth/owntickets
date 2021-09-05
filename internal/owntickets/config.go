@@ -26,9 +26,13 @@ type Config struct {
 	PasswordHash                     string `json:"passwordHash"`
 	RequirePasswordForTicketCreation bool   `json:"requirePasswordForTicketCreation"`
 	TicketCreationPasswordHash       string `json:"ticketCreationPasswordHash"`
+	Database                         string `json:"database"`
 }
 
 func (c *Config) Validate() error {
+	if len(c.Database) == 0 {
+		return fmt.Errorf("set OWNTICKETS_DATABASE environment variable, or set the database key in the config file")
+	}
 	if len(c.PasswordHash) == 0 {
 		return fmt.Errorf("set OWNTICKETS_PASSWORD_HASH environment variable or the passwordHash key in the config file")
 	}
@@ -55,6 +59,11 @@ func (c *Config) LoadFromEnv() {
 	if ok {
 		c.TicketCreationPasswordHash = ticketPassword
 	}
+
+	database, ok := os.LookupEnv("OWNTICKETS_DATABASE")
+	if ok {
+		c.Database = database
+	}
 }
 
 func (c *Config) LoadFromFile(path string) error {
@@ -70,6 +79,7 @@ func (c *Config) LoadFromFile(path string) error {
 	c.PasswordHash = c2.PasswordHash
 	c.RequirePasswordForTicketCreation = c2.RequirePasswordForTicketCreation
 	c.TicketCreationPasswordHash = c2.TicketCreationPasswordHash
+	c.Database = c2.Database
 
 	return nil
 }
