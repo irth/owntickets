@@ -1,0 +1,14 @@
+{% extends "templates/base.html" %}
+{% block title %}Login{% endblock %}
+{% block header %}Login{% endblock %}
+{% block body %}
+<form method="POST">
+    <p>
+        <input type="password" name="password" id="password">
+        <input type="submit" value="Login">
+    </p>
+    {% if error %}
+    <p>Incorrect password</p>
+    {% endif %}
+</form>
+{% endblock %}
