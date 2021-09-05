@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/flosch/pongo2/v4"
+	"github.com/irth/owntickets/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -50,7 +51,11 @@ func (o *OwnTickets) AdminPage(w http.ResponseWriter, r *http.Request) {
 	if !o.CheckAdminCookie(w, r, true) {
 		return
 	}
-	o.AdminTemplate.ExecuteWriter(pongo2.Context{}, w)
+
+	var tickets []models.Ticket
+	o.Database.Find(&tickets)
+
+	o.AdminTemplate.ExecuteWriter(pongo2.Context{"tickets": tickets}, w)
 }
 
 func (o *OwnTickets) LoginPage(w http.ResponseWriter, r *http.Request) {

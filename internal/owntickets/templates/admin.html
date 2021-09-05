@@ -5,4 +5,10 @@
 <form method="POST" action="/logout">
     <input type="submit" value="Logout" id="logout">
 </form>
+
+<ul>
+    {% for ticket in tickets %}
+    <li><a href="/tickets/{{ ticket.ID }}"><b>#{{ ticket.ID }}</b> {{ ticket.Title }}</a></li>
+    {% endfor %}
+</ul>
 {% endblock %}
