@@ -12,7 +12,9 @@
             "program": "${workspaceFolder}",
             "env":{
                 "OWNTICKETS_DATABASE": "./sqlite3.db",
-                "OWNTICKETS_PASSWORD_HASH": "kek"
+                "OWNTICKETS_PASSWORD_HASH": "kek",
+                "OWNTICKETS_REQUIRE_PASSWORD": "yes",
+                "OWNTICKETS_TICKET_PASSWORD_HASH": "lol",
             },
             "args": ["serve"]
         }

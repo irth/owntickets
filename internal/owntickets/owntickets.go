@@ -72,7 +72,9 @@ func (o *OwnTickets) SetupTemplates() (err error) {
 }
 
 func (o *OwnTickets) TicketPage(w http.ResponseWriter, r *http.Request) {
-	o.TicketFormTemplate.ExecuteWriter(nil, w)
+	o.TicketFormTemplate.ExecuteWriter(pongo2.Context{
+		"ask_for_password": o.Config.RequirePasswordForTicketCreation,
+	}, w)
 	// TODO: handle POST
 }
 

@@ -1,3 +1,20 @@
 {% extends "templates/base.html" %}
 {% block title %}Create ticket{% endblock %}
 {% block header %}Create ticket{% endblock %}
+{% block body %}
+<form method="POST">
+    <p>
+        Title: <input type="text" name="title" id="title">
+    </p>
+    <p>
+        Content: <br>
+        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    </p>
+    {% if ask_for_password %}
+    <p>
+        Password: <input type="password" name="password" id="password">
+    </p>
+    {% endif %}
+    <input type="submit" value="Create ticket">
+</form>
+{% endblock %}
