@@ -36,8 +36,9 @@ func (o *OwnTickets) ViewTicketPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: allow admin to access any ticket
-	if ticket.Key != r.URL.Query().Get("key") {
+	isAdmin := o.CheckAdminCookie(w, r, false)
+
+	if !isAdmin && ticket.Key != r.URL.Query().Get("key") {
 		o.Error(w, 403, "Unauthorized", "Incorrect access key.")
 		return
 	}
